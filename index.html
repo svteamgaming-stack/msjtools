@@ -1,38 +1,419 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr" data-lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>MSJ Tools | Future Technology</title>
-    <!-- استيراد مكتبة أيقونات Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; margin: 0; padding: 0; background: #f9f9f9; color: #333; }
-        header { background: #2c3e50; color: white; padding: 2rem; text-align: center; }
-        section { padding: 2rem; max-width: 800px; margin: auto; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 20px; }
-        footer { text-align: center; padding: 2rem; color: #7f8c8d; }
-        .social-icons { margin-bottom: 15px; }
-        .social-icons a { color: #2c3e50; font-size: 24px; margin: 0 10px; text-decoration: none; transition: color 0.3s; }
-        .social-icons a:hover { color: #3498db; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MSJ Future Technology</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Tajawal:wght@500;700&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E14;
+    --surface:#121826;
+    --surface-2:#182136;
+    --line:#232C40;
+    --text:#E7ECF3;
+    --muted:#8B95AA;
+    --signal:#00E5C7;
+    --amber:#F2A65A;
+    --font-display:'Space Grotesk','Tajawal','Noto Sans SC',sans-serif;
+    --font-body:'Inter','Tajawal','Noto Sans SC',sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  html[data-lang="ar"] body{ font-family:'Tajawal', var(--font-body); }
+  html[data-lang="zh"] body{ font-family:'Noto Sans SC', var(--font-body); }
+
+  ::selection{ background:var(--signal); color:#04150F; }
+
+  a{ color:inherit; }
+
+  .noise-line{
+    position:fixed; top:0; left:0; right:0; height:2px; z-index:50;
+    background:linear-gradient(90deg, transparent, var(--signal), transparent);
+    background-size:200% 100%;
+    animation:sweep 6s linear infinite;
+    opacity:.7;
+  }
+  @keyframes sweep{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+
+  /* ===== Top bar ===== */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 6vw;
+    background:rgba(10,14,20,.75);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--font-display); font-weight:700; font-size:1.05rem;
+    letter-spacing:.02em;
+  }
+  .brand .dot{ width:9px; height:9px; border-radius:2px; background:var(--signal); transform:rotate(45deg); box-shadow:0 0 12px var(--signal); flex:none; }
+  .brand small{ display:block; font-family:var(--font-mono); font-weight:400; font-size:.65rem; color:var(--muted); letter-spacing:.14em; }
+
+  /* language switcher — terminal style */
+  .langbox{ position:relative; font-family:var(--font-mono); }
+  .lang-trigger{
+    display:flex; align-items:center; gap:8px;
+    background:var(--surface); border:1px solid var(--line);
+    color:var(--signal); padding:9px 14px; border-radius:6px;
+    font-size:.8rem; cursor:pointer; user-select:none;
+    transition:border-color .2s ease;
+  }
+  .lang-trigger:hover{ border-color:var(--signal); }
+  .lang-trigger .caret{ color:var(--muted); font-size:.7rem; transition:transform .2s ease; }
+  .lang-trigger .cursor{ display:inline-block; width:6px; height:1.1em; background:var(--signal); animation:blink 1s step-start infinite; margin-inline-start:2px; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .lang-menu{
+    position:absolute; inset-inline-end:0; top:calc(100% + 8px);
+    background:var(--surface-2); border:1px solid var(--line); border-radius:8px;
+    min-width:190px; padding:6px; display:none; flex-direction:column; gap:2px;
+    box-shadow:0 20px 40px rgba(0,0,0,.45); z-index:60;
+  }
+  .lang-menu.open{ display:flex; }
+  .lang-menu button{
+    all:unset; cursor:pointer; padding:9px 12px; border-radius:5px;
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:.82rem; color:var(--text);
+  }
+  .lang-menu button:hover{ background:rgba(0,229,199,.1); color:var(--signal); }
+  .lang-menu button.active{ color:var(--signal); }
+  .lang-menu button .code{ font-family:var(--font-mono); font-size:.68rem; color:var(--muted); }
+
+  /* ===== Hero ===== */
+  .hero{
+    padding:min(14vh,120px) 6vw 80px;
+    max-width:1000px; margin:0 auto;
+    text-align:center;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:var(--font-mono); font-size:.72rem; letter-spacing:.24em;
+    color:var(--signal); text-transform:uppercase; margin-bottom:18px;
+    display:inline-flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before, .eyebrow::after{ content:''; width:26px; height:1px; background:var(--signal); opacity:.5; }
+  h1.hero-title{
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(2rem, 5.2vw, 3.6rem); line-height:1.12; margin:0 0 22px;
+    letter-spacing:-.01em;
+  }
+  h1.hero-title .accent{ color:var(--signal); }
+  .hero-tagline{ color:var(--muted); font-size:1.08rem; max-width:640px; margin:0 auto; }
+
+  /* ===== Sections ===== */
+  section.block{
+    max-width:1000px; margin:0 auto; padding:60px 6vw;
+    border-top:1px solid var(--line);
+  }
+  .grid-2{ display:grid; grid-template-columns:220px 1fr; gap:48px; }
+  @media (max-width:720px){ .grid-2{ grid-template-columns:1fr; gap:20px; } }
+
+  .section-label{
+    font-family:var(--font-mono); font-size:.7rem; color:var(--muted);
+    letter-spacing:.18em; text-transform:uppercase;
+  }
+  .section-label .num{ color:var(--signal); }
+  h2.section-title{
+    font-family:var(--font-display); font-weight:600; font-size:1.7rem; margin:8px 0 0;
+  }
+  .section-body p{ color:#C7CEDA; font-size:1rem; margin:0 0 16px; }
+
+  .stat-row{ display:flex; gap:34px; margin-top:26px; flex-wrap:wrap; }
+  .stat{ font-family:var(--font-display); }
+  .stat .n{ font-size:2rem; font-weight:700; color:var(--signal); }
+  .stat .l{ font-family:var(--font-mono); font-size:.68rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; }
+
+  /* founder card */
+  .founder-card{
+    display:flex; gap:26px; align-items:center;
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:28px; margin-top:6px;
+  }
+  @media (max-width:560px){ .founder-card{ flex-direction:column; text-align:center; } }
+  .avatar{
+    width:74px; height:74px; border-radius:50%; flex:none;
+    background:linear-gradient(135deg, var(--signal), var(--amber));
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:700; color:#04150F; font-size:1.4rem;
+  }
+  .founder-name{ font-family:var(--font-display); font-weight:600; font-size:1.15rem; }
+  .founder-role{ font-family:var(--font-mono); font-size:.72rem; color:var(--signal); letter-spacing:.08em; text-transform:uppercase; margin-bottom:8px; }
+  .founder-text{ color:#C7CEDA; font-size:.95rem; margin:0; }
+
+  /* ===== Footer ===== */
+  footer{
+    border-top:1px solid var(--line); padding:50px 6vw 40px; text-align:center;
+  }
+  .social-icons{ margin-bottom:20px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap; }
+  .social-icons a{
+    width:48px; height:48px; border-radius:13px;
+    display:flex; align-items:center; justify-content:center;
+    background:#FFFFFF;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
+    text-decoration:none;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .social-icons a:hover{ transform:translateY(-4px); box-shadow:0 10px 24px rgba(0,0,0,.4); }
+  .social-icons img{ width:24px; height:24px; display:block; }
+  .footer-copy{ color:var(--muted); font-size:.82rem; font-family:var(--font-mono); }
+  .footer-brand{ color:#5b6579; font-size:.75rem; margin-top:4px; }
+
+  [data-i18n]{ transition:opacity .15s ease; }
+</style>
 </head>
 <body>
-    <header>
-        <h1>MSJ Future Technology</h1>
-        <p>نصيغ المستقبل بأدوات تقنية متطورة</p>
-    </header>
-    <section>
-        <h2>من نحن؟</h2>
-        <p>مشروع msjtools.com هو نتاج أكثر من 26 عاماً من الخبرة في تحليل الأنظمة، ابتكار الحلول، وفك شفرات التحديات التقنية المعقدة. نحن نركز على تحويل الأفكار الاستراتيجية إلى واقع تقني ملموس.</p>
-    </section>
-    <footer>
-        <div class="social-icons">
-            <a href="https://www.youtube.com/@MSJ.FUTURE.TECHNOLOGY" target="_blank"><i class="fab fa-youtube"></i></a>
-            <a href="https://www.instagram.com/msj.future.tech/" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.tiktok.com/@msj.future.techno" target="_blank"><i class="fab fa-tiktok"></i></a>
-            <a href="https://www.facebook.com/MSJ.Future.Technology" target="_blank"><i class="fab fa-facebook"></i></a>
-            <a href="https://wa.me/212612091628" target="_blank"><i class="fab fa-whatsapp"></i></a>
+
+<div class="noise-line"></div>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="dot"></span>
+    <div>
+      MSJ Future Technology
+      <small data-i18n="brandTag">TECHNOLOGY STUDIO</small>
+    </div>
+  </div>
+
+  <div class="langbox">
+    <div class="lang-trigger" id="langTrigger">
+      <span id="langCurrent">EN</span>
+      <span class="cursor"></span>
+      <span class="caret" id="langCaret"><i class="fa-solid fa-chevron-down"></i></span>
+    </div>
+    <div class="lang-menu" id="langMenu"></div>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="eyebrow" data-i18n="heroEyebrow">TECHNOLOGY STUDIO</div>
+  <h1 class="hero-title">
+    <span data-i18n="heroTitle">Engineering the Future, <span class="accent">One System at a Time</span></span>
+  </h1>
+  <p class="hero-tagline" data-i18n="heroTagline">
+    We design advanced technical tools and solutions that turn complex challenges into simple, elegant systems.
+  </p>
+</section>
+
+<section class="block">
+  <div class="grid-2">
+    <div class="section-label"><span class="num">01</span> / <span data-i18n="aboutLabel">ABOUT</span></div>
+    <div class="section-body">
+      <h2 class="section-title" data-i18n="aboutHeading">Who We Are</h2>
+      <p data-i18n="aboutText">MSJTools.com is the result of more than 26 years of experience in systems analysis, solution engineering, and decoding complex technical challenges. We focus on turning strategic ideas into tangible technology.</p>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="n">26+</div>
+          <div class="l" data-i18n="statYears">YEARS OF EXPERIENCE</div>
         </div>
-        <p>&copy; 2026 MSJ Future Technology. All Rights Reserved.</p>
-    </footer>
+        <div class="stat">
+          <div class="n">MSJ</div>
+          <div class="l" data-i18n="statTeam">DEDICATED TEAM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="grid-2">
+    <div class="section-label"><span class="num">02</span> / <span data-i18n="founderLabel">FOUNDER</span></div>
+    <div class="section-body">
+      <h2 class="section-title" data-i18n="founderHeading">Founder &amp; Team</h2>
+      <div class="founder-card">
+        <div class="avatar">MSJ</div>
+        <div>
+          <div class="founder-name">M.SeDiK.J</div>
+          <div class="founder-role" data-i18n="founderRole">FOUNDER, MSJ FUTURE TECHNOLOGY</div>
+          <p class="founder-text" data-i18n="founderText">MSJ Future Technology is led by its founder, M.SeDiK.J, together with a dedicated team committed to building reliable, forward-looking technical tools.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="social-icons">
+    <a href="https://www.youtube.com/@MSJ.FUTURE.TECHNOLOGY" target="_blank" rel="noopener" aria-label="YouTube"><img src="https://cdn.simpleicons.org/youtube" alt="YouTube"></a>
+    <a href="https://www.instagram.com/msj.future.tech/" target="_blank" rel="noopener" aria-label="Instagram"><img src="https://cdn.simpleicons.org/instagram" alt="Instagram"></a>
+    <a href="https://www.tiktok.com/@msj.future.techno" target="_blank" rel="noopener" aria-label="TikTok"><img src="https://cdn.simpleicons.org/tiktok" alt="TikTok"></a>
+    <a href="https://www.facebook.com/MSJ.Future.Technology" target="_blank" rel="noopener" aria-label="Facebook"><img src="https://cdn.simpleicons.org/facebook" alt="Facebook"></a>
+    <a href="https://wa.me/212612091628" target="_blank" rel="noopener" aria-label="WhatsApp"><img src="https://cdn.simpleicons.org/whatsapp" alt="WhatsApp"></a>
+  </div>
+  <div class="footer-copy" data-i18n="copyright">© 2026 MSJ Future Technology. All Rights Reserved.</div>
+  <div class="footer-brand">Founder: M.SeDiK.J</div>
+</footer>
+
+<script>
+const translations = {
+  en: {
+    code:"EN", name:"English",
+    brandTag:"TECHNOLOGY STUDIO",
+    heroEyebrow:"TECHNOLOGY STUDIO",
+    heroTitle:'Engineering the Future, <span class="accent">One System at a Time</span>',
+    heroTagline:"We design advanced technical tools and solutions that turn complex challenges into simple, elegant systems.",
+    aboutLabel:"ABOUT", aboutHeading:"Who We Are",
+    aboutText:"MSJTools.com is the result of more than 26 years of experience in systems analysis, solution engineering, and decoding complex technical challenges. We focus on turning strategic ideas into tangible technology.",
+    statYears:"YEARS OF EXPERIENCE", statTeam:"DEDICATED TEAM",
+    founderLabel:"FOUNDER", founderHeading:"Founder &amp; Team",
+    founderRole:"FOUNDER, MSJ FUTURE TECHNOLOGY",
+    founderText:"MSJ Future Technology is led by its founder, M.SeDiK.J, together with a dedicated team committed to building reliable, forward-looking technical tools.",
+    copyright:"© 2026 MSJ Future Technology. All Rights Reserved.",
+    dir:"ltr"
+  },
+  ar: {
+    code:"AR", name:"العربية",
+    brandTag:"استوديو تقني",
+    heroEyebrow:"استوديو تقني",
+    heroTitle:'نصيغ المستقبل، <span class="accent">نظاماً تلو الآخر</span>',
+    heroTagline:"نصمم أدوات وحلولاً تقنية متقدمة تحوّل التحديات المعقدة إلى أنظمة بسيطة وأنيقة.",
+    aboutLabel:"من نحن", aboutHeading:"من نحن",
+    aboutText:"مشروع MSJTools.com هو نتاج أكثر من 26 عاماً من الخبرة في تحليل الأنظمة، وهندسة الحلول، وفك شفرة التحديات التقنية المعقدة. نحن نركز على تحويل الأفكار الاستراتيجية إلى واقع تقني ملموس.",
+    statYears:"سنوات من الخبرة", statTeam:"فريق متفانٍ",
+    founderLabel:"المؤسس", founderHeading:"المؤسس والفريق",
+    founderRole:"مؤسس MSJ FUTURE TECHNOLOGY",
+    founderText:"يقود MSJ Future Technology مؤسسها M.SeDiK.J، إلى جانب فريق متفانٍ ملتزم ببناء أدوات تقنية موثوقة وتستشرف المستقبل.",
+    copyright:"© 2026 MSJ Future Technology. جميع الحقوق محفوظة.",
+    dir:"rtl"
+  },
+  fr: {
+    code:"FR", name:"Français",
+    brandTag:"STUDIO TECHNOLOGIQUE",
+    heroEyebrow:"STUDIO TECHNOLOGIQUE",
+    heroTitle:'Façonner l\'avenir, <span class="accent">système après système</span>',
+    heroTagline:"Nous concevons des outils et solutions technologiques avancés qui transforment des défis complexes en systèmes simples et élégants.",
+    aboutLabel:"À PROPOS", aboutHeading:"Qui sommes-nous",
+    aboutText:"MSJTools.com est le fruit de plus de 26 ans d'expérience en analyse de systèmes, en ingénierie de solutions et en résolution de défis techniques complexes. Nous transformons les idées stratégiques en réalités technologiques concrètes.",
+    statYears:"ANS D'EXPÉRIENCE", statTeam:"ÉQUIPE DÉVOUÉE",
+    founderLabel:"FONDATEUR", founderHeading:"Fondateur &amp; Équipe",
+    founderRole:"FONDATEUR, MSJ FUTURE TECHNOLOGY",
+    founderText:"MSJ Future Technology est dirigée par son fondateur, M.SeDiK.J, avec une équipe dévouée engagée à créer des outils technologiques fiables et tournés vers l'avenir.",
+    copyright:"© 2026 MSJ Future Technology. Tous droits réservés.",
+    dir:"ltr"
+  },
+  es: {
+    code:"ES", name:"Español",
+    brandTag:"ESTUDIO TECNOLÓGICO",
+    heroEyebrow:"ESTUDIO TECNOLÓGICO",
+    heroTitle:'Diseñando el futuro, <span class="accent">sistema a sistema</span>',
+    heroTagline:"Creamos herramientas y soluciones tecnológicas avanzadas que convierten desafíos complejos en sistemas simples y elegantes.",
+    aboutLabel:"QUIÉNES SOMOS", aboutHeading:"Quiénes somos",
+    aboutText:"MSJTools.com es el resultado de más de 26 años de experiencia en análisis de sistemas, ingeniería de soluciones y resolución de retos técnicos complejos. Nos enfocamos en convertir ideas estratégicas en tecnología tangible.",
+    statYears:"AÑOS DE EXPERIENCIA", statTeam:"EQUIPO COMPROMETIDO",
+    founderLabel:"FUNDADOR", founderHeading:"Fundador &amp; Equipo",
+    founderRole:"FUNDADOR, MSJ FUTURE TECHNOLOGY",
+    founderText:"MSJ Future Technology está dirigida por su fundador, M.SeDiK.J, junto a un equipo comprometido con la creación de herramientas tecnológicas fiables y orientadas al futuro.",
+    copyright:"© 2026 MSJ Future Technology. Todos los derechos reservados.",
+    dir:"ltr"
+  },
+  de: {
+    code:"DE", name:"Deutsch",
+    brandTag:"TECHNOLOGIE-STUDIO",
+    heroEyebrow:"TECHNOLOGIE-STUDIO",
+    heroTitle:'Die Zukunft gestalten, <span class="accent">System für System</span>',
+    heroTagline:"Wir entwickeln fortschrittliche technische Werkzeuge und Lösungen, die komplexe Herausforderungen in einfache, elegante Systeme verwandeln.",
+    aboutLabel:"ÜBER UNS", aboutHeading:"Wer wir sind",
+    aboutText:"MSJTools.com ist das Ergebnis von über 26 Jahren Erfahrung in Systemanalyse, Lösungsentwicklung und der Entschlüsselung komplexer technischer Herausforderungen. Wir verwandeln strategische Ideen in greifbare Technologie.",
+    statYears:"JAHRE ERFAHRUNG", statTeam:"ENGAGIERTES TEAM",
+    founderLabel:"GRÜNDER", founderHeading:"Gründer &amp; Team",
+    founderRole:"GRÜNDER, MSJ FUTURE TECHNOLOGY",
+    founderText:"MSJ Future Technology wird von seinem Gründer M.SeDiK.J geleitet, gemeinsam mit einem engagierten Team, das zuverlässige, zukunftsorientierte technische Werkzeuge entwickelt.",
+    copyright:"© 2026 MSJ Future Technology. Alle Rechte vorbehalten.",
+    dir:"ltr"
+  },
+  zh: {
+    code:"中文", name:"中文",
+    brandTag:"科技工作室",
+    heroEyebrow:"科技工作室",
+    heroTitle:'以系统构筑未来，<span class="accent">一次一个系统</span>',
+    heroTagline:"我们打造先进的技术工具与解决方案，将复杂的挑战转化为简洁优雅的系统。",
+    aboutLabel:"关于我们", aboutHeading:"关于我们",
+    aboutText:"MSJTools.com 凝聚了超过26年的系统分析、解决方案工程与复杂技术难题破解经验。我们专注于将战略构想转化为切实可行的技术成果。",
+    statYears:"年行业经验", statTeam:"专业团队",
+    founderLabel:"创始人", founderHeading:"创始人与团队",
+    founderRole:"创始人，MSJ FUTURE TECHNOLOGY",
+    founderText:"MSJ Future Technology 由创始人 M.SeDiK.J 领导，携手一支致力于打造可靠、前瞻性技术工具的专业团队。",
+    copyright:"© 2026 MSJ Future Technology. 保留所有权利。",
+    dir:"ltr"
+  },
+  ru: {
+    code:"RU", name:"Русский",
+    brandTag:"ТЕХНОЛОГИЧЕСКАЯ СТУДИЯ",
+    heroEyebrow:"ТЕХНОЛОГИЧЕСКАЯ СТУДИЯ",
+    heroTitle:'Создаём будущее, <span class="accent">система за системой</span>',
+    heroTagline:"Мы разрабатываем передовые технические инструменты и решения, превращающие сложные задачи в простые и элегантные системы.",
+    aboutLabel:"О НАС", aboutHeading:"Кто мы",
+    aboutText:"MSJTools.com — результат более чем 26-летнего опыта в системном анализе, инженерии решений и разборе сложных технических задач. Мы превращаем стратегические идеи в осязаемые технологии.",
+    statYears:"ЛЕТ ОПЫТА", statTeam:"СПЛОЧЁННАЯ КОМАНДА",
+    founderLabel:"ОСНОВАТЕЛЬ", founderHeading:"Основатель &amp; Команда",
+    founderRole:"ОСНОВАТЕЛЬ, MSJ FUTURE TECHNOLOGY",
+    founderText:"MSJ Future Technology возглавляет основатель M.SeDiK.J вместе с командой, приверженной созданию надёжных и перспективных технических инструментов.",
+    copyright:"© 2026 MSJ Future Technology. Все права защищены.",
+    dir:"ltr"
+  }
+};
+
+const order = ["en","ar","fr","es","de","zh","ru"];
+const menu = document.getElementById("langMenu");
+const trigger = document.getElementById("langTrigger");
+const currentLabel = document.getElementById("langCurrent");
+
+function buildMenu(activeKey){
+  menu.innerHTML = "";
+  order.forEach(key=>{
+    const t = translations[key];
+    const btn = document.createElement("button");
+    btn.className = key === activeKey ? "active" : "";
+    btn.innerHTML = `<span>${t.name}</span><span class="code">${t.code}</span>`;
+    btn.addEventListener("click", ()=>{ setLanguage(key); menu.classList.remove("open"); });
+    menu.appendChild(btn);
+  });
+}
+
+function setLanguage(key){
+  const t = translations[key];
+  if(!t) return;
+  document.documentElement.setAttribute("lang", key);
+  document.documentElement.setAttribute("dir", t.dir);
+  document.documentElement.setAttribute("data-lang", key);
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const k = el.getAttribute("data-i18n");
+    if(t[k] !== undefined) el.innerHTML = t[k];
+  });
+  currentLabel.textContent = t.code;
+  buildMenu(key);
+  try{ localStorage.setItem("msj_lang", key); }catch(e){}
+}
+
+trigger.addEventListener("click", ()=> menu.classList.toggle("open"));
+document.addEventListener("click", (e)=>{
+  if(!e.target.closest(".langbox")) menu.classList.remove("open");
+});
+
+let initial = "en";
+try{
+  const saved = localStorage.getItem("msj_lang");
+  if(saved && translations[saved]) initial = saved;
+}catch(e){}
+
+buildMenu(initial);
+setLanguage(initial);
+</script>
+
 </body>
 </html>
