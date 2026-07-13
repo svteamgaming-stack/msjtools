@@ -1,6 +1,0 @@
-{
-  "name": "MSJ Future Tech Portal",
-  "description": "A premium tech-editorial dashboard featuring quantum simulation consoles, neural mesh training nodes, and real-time network telemetry.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
